@@ -1,0 +1,58 @@
+version: "0.1"
+
+tests:
+  - id: T-RES-001
+    algorithm: ALG-RES-001
+    name: preserve scenario modality
+    input:
+      fact: "identity-document leakage has not been confirmed"
+      scenario: "if identity documents leaked, identity misuse defenses may become relevant"
+    expected:
+      must_not_claim:
+        - "identity documents leaked"
+        - "all users must register credit protections"
+      must_preserve:
+        - conditionality
+        - unknown state
+
+  - id: T-GOV-001
+    algorithm: ALG-GOV-001
+    name: filter microscope detail by actor
+    input:
+      actor: end_user
+      candidate_questions:
+        - exact password hashing implementation
+        - whether leaked credentials remain usable
+    expected:
+      prefer:
+        - whether leaked credentials remain usable
+      retain_internal:
+        - exact password hashing implementation
+
+  - id: T-SEC-001
+    algorithm: ALG-SEC-001
+    name: EOL fingerprint is not incident causality
+    input:
+      observed:
+        - EOL framework fingerprint is visible in HTML
+      unknown:
+        - deployed version
+        - vendor maintenance
+        - incident entry vector
+    expected:
+      may_infer:
+        - maintenance model deserves investigation
+      must_not_infer:
+        - framework caused the breach
+        - service is categorically unsafe
+
+  - id: T-SEC-002
+    algorithm: ALG-SEC-001
+    name: data sensitivity changes investigation depth
+    input:
+      cases:
+        - data_type: disposable email alias
+        - data_type: identity-document image plus face image
+    expected:
+      deeper_investigation_for:
+        - identity-document image plus face image
