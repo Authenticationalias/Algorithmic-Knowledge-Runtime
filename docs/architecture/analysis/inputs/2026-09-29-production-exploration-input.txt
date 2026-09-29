@@ -1,0 +1,411 @@
+```text
+AKR（Algorithmic Knowledge Runtime）の上流Architecture検討を継続してください。
+
+前回までのPurpose / Absolute Principles / Hard Constraints、および
+2026-09-29-upstream-design.md
+で行った分析を引き継いでください。
+
+ただし、前回の推奨案を最終Architectureとして固定しないでください。
+
+今回は、実運用開始とArchitecture探索を両立させる方法を検討したいです。
+
+
+────────────────
+1. Purpose
+────────────────
+
+チャット、agent、local AI、cloud AI、将来のAI runtime等で生成・発見された有用なアルゴリズムを外部化し、
+
+AI自身が長期的に
+
+- 登録
+- 発見
+- 選択
+- 理解
+- 再利用
+- 組み合わせ
+- 評価
+- 改修
+- refactoring
+- migration
+- version管理
+- rollback
+- supersede
+- deprecate
+- repair
+
+できる基盤を作る。
+
+アルゴリズム数は、将来的に数百・数千・それ以上まで増加することを想定する。
+
+
+────────────────
+2. Absolute Principles
+────────────────
+
+■ AI-native
+
+すべてのライフサイクル管理にAIが介在する。
+
+人間による日常的な手編集・整理・同期管理は前提としない。
+
+Human authoring convenience / human readability を主要な評価関数にしない。
+
+必要な場合の人間監査は可能でもよいが、それを中心にArchitectureを最適化しない。
+
+
+■ AI maintainability
+
+保守管理性を最重要制約とする。
+
+ここでのmaintainabilityとは、
+
+AIが大量の資産を継続的に
+
+- 更新
+- 同期
+- 検証
+- 移行
+- 再構築
+- 修復
+- 整理
+
+しやすいことを意味する。
+
+
+■ Model / Runtime independence
+
+Canonicalな意味を特定モデル、特定vendor、特定chat/agent製品へ依存させない。
+
+ただしモデル性能、context長、tool利用能力、agent loop、structured output能力等によって、最適representationやexecution adapterが異なることは許容する。
+
+
+■ Evolution
+
+将来の
+
+- schema変更
+- representation変更
+- storage変更
+- retrieval変更
+- runtime変更
+- model変更
+
+を前提とする。
+
+現在の方式への不可逆なlock-inを避ける。
+
+
+────────────────
+3. GitHubの位置付け
+────────────────
+
+GitHubを、
+
+- version
+- history
+- branch
+- diff
+- provenance
+- rollback
+- comparison
+- candidate management
+
+の基盤として利用する。
+
+重要なのは、GitHubを「最終的な一つの正解だけを保存する場所」と限定しないこと。
+
+Architecture Candidate A / B / C や、
+同一AlgorithmのRepresentation A / B / C を、
+必要なら長期間並存させてもよい。
+
+Git履歴上の更新は、過去状態を失う上書きではない。
+
+したがって、Architecture案・実験結果・旧方式・deprecated方式を、必要に応じて履歴または明示的Candidateとして保持できる。
+
+
+────────────────
+4. 現在の重要な制約
+────────────────
+
+現時点では、数千〜数万の実アルゴリズムを含む大規模AKR datasetは存在しない。
+
+したがって、
+
+「どのrepresentation / storage / architectureが、長期的に最もAI保守コストが低いか」
+
+を実運用datasetによって証明することはできない。
+
+Synthetic datasetでは、
+
+- 件数
+- query負荷
+- storage負荷
+
+等は模擬できても、
+
+- 実際のsemantic overlap
+- dependency density
+- semantic drift
+- 改修頻度
+- conflict pattern
+- retrieval pattern
+- reuse pattern
+- migration difficulty
+
+を忠実には再現できない可能性が高い。
+
+したがって、現段階のbenchmarkだけで永久Architectureを選定しない。
+
+
+────────────────
+5. 新しい運用仮説
+────────────────
+
+大規模datasetが存在しない問題への対応として、
+
+「実際のAKR運用を開始しながら、有力な複数representationを並行して育てる」
+
+方式を検討する。
+
+概念例：
+
+Algorithm Identity
+    ALG-XXXX @ revision N
+          |
+          +-- Representation A
+          +-- Representation B
+          +-- Representation C
+          +-- Runtime form D
+          +-- Model/Agent adapter E
+
+同じAlgorithmを完全に別物として扱う必要はない。
+
+Stable identity / revision / lineage等を共有しながら、
+複数representationを同一資産の異なる表現として管理する構成も候補とする。
+
+
+────────────────
+6. 重要な前提変更
+────────────────
+
+複数representationの維持コストを、
+「人間が何度も編集しなければならないから高コスト」
+とは評価しないこと。
+
+管理主体はAIである。
+
+問題になるのは、
+
+- AIの計算コスト
+- synchronization complexity
+- semantic divergence
+- validation cost
+- conflict resolution
+- migration cost
+- retrieval complexity
+- storage / context cost
+- repairability
+
+である。
+
+AIが十分に管理可能であり、
+得られる情報・性能・将来の比較価値が大きければ、
+representation redundancy自体を禁止する必要はない。
+
+「冗長性」ではなく
+「制御不能な冗長性」
+を問題として扱う。
+
+
+────────────────
+7. Production-driven Architecture Evaluation
+────────────────
+
+実際のアルゴリズム登録はArchitecture確定まで停止しない。
+
+今後、新しいAlgorithmを実運用で登録していく。
+
+有力な複数representationをAIが生成・維持可能なら、
+それらも同時に蓄積する。
+
+この結果、
+
+実運用そのものから、
+
+- create history
+- modification history
+- migration history
+- retrieval history
+- dependency evolution
+- conflict history
+- validation failure
+- repair event
+- model-specific performance
+- context consumption
+
+等の本物のデータが形成される。
+
+将来的には、この実運用datasetをArchitecture選定・再評価のbenchmarkとして利用できる。
+
+つまり、
+
+Architecture hypothesis
+    ↓
+parallel production use
+    ↓
+real corpus growth
+    ↓
+observed maintenance data
+    ↓
+architecture re-evaluation
+
+というfeedback loopを構築可能か検討する。
+
+
+────────────────
+8. 単一形式への早期収束を前提にしない
+────────────────
+
+将来の観測結果によっては、
+
+Representation A = Canonicalに有利
+Representation B = retrievalに有利
+Representation C = graph traversalに有利
+Representation D = small-model executionに有利
+
+のように、複数方式が異なる役割でPareto-optimalになる可能性がある。
+
+最終的に一つへ統一すること自体を目的にしない。
+
+一方で、ある方式が継続的に劣後すると確認された場合には、
+
+- new generation停止
+- deprecated化
+- migration
+- archive
+
+等をAIが行えるようにする。
+
+
+────────────────
+9. 今回検討してほしいこと
+────────────────
+
+以下を上流Architectureとして再検討してください。
+
+1. 実運用開始とArchitecture探索を両立させる最小構成。
+
+2. 同一Algorithm Identityに複数representationを紐付けることの利点・問題点。
+
+3. Single Canonical Representationを必要とするか。
+
+4. 必要なのはSingle Canonical Formatではなく、
+   Single Semantic Identity / Authority / Lineageなのではないか。
+
+5. 複数representation間の
+   - equivalence
+   - derivation
+   - synchronization
+   - version correspondence
+   をどう扱うべきか。
+
+6. どのrepresentationを派生生成物とし、
+   どのrepresentationには独立した意味変更を許容すべきか。
+
+7. AIが独自に改善したprompt / adapter / model-specific variantを
+   cacheとするか、
+   independently evaluated assetとするか。
+
+8. 実運用datasetを将来のArchitecture benchmarkとして育てるため、
+   何を最初から観測・記録すべきか。
+
+9. 将来のArchitecture候補比較を可能にするため、
+   今から固定すべき最小のStable Identity / Revision / Provenance情報。
+
+10. 今決めなければ後から変更が非常に高コストになるArchitecture Decisionと、
+    実データが蓄積するまで保留可能なDecisionを分離する。
+
+11. 上流Architecture候補が複数残る場合、
+    GitHub上でどのように
+    current / candidate / experimental / deprecated
+    を管理するのが適切か。
+
+12. 日常的なAlgorithm登録を今すぐ始めても、
+    将来のArchitecture変更を阻害しにくい「minimum viable semantic envelope」が存在するか。
+
+
+────────────────
+10. 既存候補について
+────────────────
+
+過去には多数の形式・方式が検討対象になった。
+
+例：
+
+JSON
+JSONL
+YAML
+Markdown
+XML
+SQLite
+PostgreSQL
+DuckDB
+Parquet
+RDF
+JSON-LD
+graph database
+vector index
+event sourcing
+typed DSL
+IR
+Protocol Buffers
+CBOR
+S1000D
+DITA
+OSLC
+W3C PROV
+その他
+
+これらを採用前提にはしない。
+
+ただし、過去の探索結果として比較対象へ戻してよい。
+
+AI-native環境では、
+人間中心時代に高コストだった方式の評価が変化する可能性があるため、
+必要なら再評価する。
+
+
+────────────────
+11. 出力に求めるもの
+────────────────
+
+今回は単一の最終形式を決めることより、
+
+A. 今すぐAlgorithm登録を開始するために最低限固定すべきもの
+
+B. 複数候補を並行して育てるべきもの
+
+C. 実データ蓄積後まで保留すべきもの
+
+D. 後から変更すると高コストなので今決める必要があるもの
+
+を明確に分離してください。
+
+また、
+
+- Architecture candidate
+- Representation candidate
+- Runtime candidate
+- Retrieval candidate
+
+を混同しないでください。
+
+前回成果を消さず、今回の分析はGitHub上のAKR repositoryに、
+新しいArchitecture analysis artifactとして保存することを推奨します。
+
+既存main / canonical schema / algorithm assetsを、
+今回の分析だけを理由に即時migrationしないでください。
+
+まずは分析・候補整理・最小運用baselineの導出まで行ってください。
+```
