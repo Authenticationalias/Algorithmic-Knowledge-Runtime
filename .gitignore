@@ -1,0 +1,14 @@
+# Derived runtime artifacts
+runtime/*.sqlite
+runtime/*.sqlite3
+runtime/*.db
+runtime/*.db-wal
+runtime/*.db-shm
+
+# Local build/cache
+.cache/
+build/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
