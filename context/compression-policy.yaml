@@ -1,0 +1,32 @@
+version: "0.1"
+
+goal: preserve decision-relevant meaning while reducing context size
+
+must_preserve:
+  - actor
+  - condition
+  - uncertainty
+  - evidence_state
+  - modality
+  - scope
+  - temporal qualifier
+  - exception
+  - stop_condition
+
+forbidden_transformations:
+  - from: "OPTION"
+    to: "COMMAND"
+  - from: "SCENARIO"
+    to: "FACT"
+  - from: "INFERRED"
+    to: "VERIFIED"
+  - from: "UNKNOWN"
+    to: "SAFE"
+  - from: "UNKNOWN"
+    to: "UNSAFE"
+  - from: "conditional"
+    to: "unconditional"
+
+validation_question:
+  - would a reasonable actor make a different decision from the compressed version?
+  - did any condition, actor, uncertainty, or permission level disappear?
