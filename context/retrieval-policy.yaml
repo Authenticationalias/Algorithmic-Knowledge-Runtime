@@ -1,0 +1,30 @@
+version: "0.1"
+
+retrieval_order:
+  - registry_metadata
+  - selected_algorithm
+  - required_policies
+  - required_algorithms
+  - tests_if_validation_needed
+  - examples_only_if_ambiguity_remains
+
+rules:
+  - never retrieve the entire repository unless explicitly auditing the repository
+  - prefer exact id and dependency retrieval over broad semantic search
+  - use FTS or semantic retrieval for discovery, not as authority
+  - canonical text overrides derived SQLite rows on conflict
+  - mark stale derived indexes as invalid rather than reconciling silently
+
+context_budget:
+  preserve_first:
+    - purpose
+    - non_goals
+    - preconditions
+    - decision_gates
+    - evidence_states
+    - stop_conditions
+    - failure_modes
+  compress_first:
+    - examples
+    - explanatory_history
+    - redundant_rationale
