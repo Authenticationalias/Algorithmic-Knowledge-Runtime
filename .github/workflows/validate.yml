@@ -1,8 +1,10 @@
 name: Validate AKR
 
+# Manual only during architecture-synthesis phase.
+# Re-enable push / pull_request triggers after the canonical semantic model
+# and validation contract are stabilized.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
