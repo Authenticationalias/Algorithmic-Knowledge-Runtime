@@ -1,0 +1,32 @@
+name: Validate AKR
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install .
+      - name: Validate canonical assets
+        run: python scripts/validate_repo.py
+      - name: Build derived SQLite runtime
+        run: python scripts/build_runtime.py
+      - name: Inspect runtime
+        run: |
+          python - <<'PY'
+          import sqlite3
+          db = sqlite3.connect("runtime/akr.sqlite3")
+          print("assets:", db.execute("select count(*) from assets").fetchone()[0])
+          print("dependencies:", db.execute("select count(*) from dependencies").fetchone()[0])
+          print("fts rows:", db.execute("select count(*) from sections_fts").fetchone()[0])
+          PY
