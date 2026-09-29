@@ -1,0 +1,45 @@
+version: "0.1"
+
+principles:
+  - route by problem structure, not keyword alone
+  - load the smallest sufficient algorithm set
+  - resolve required policies before execution
+  - prefer explicit metadata over inferred dependencies
+  - do not load all algorithms by default
+
+routing:
+  - when:
+      any:
+        - sensitive_data_suitability
+        - service_security_for_user_data
+        - information_disclosure_decision
+    load:
+      - ALG-SEC-001
+
+  - when:
+      any:
+        - premature_closure_risk
+        - missing_issues
+        - blind_spot_search
+        - zero_base_reaudit
+    load:
+      - ALG-RES-001
+
+  - when:
+      any:
+        - actor_incentive_conflict
+        - external_query_filtering
+        - information_value_by_actor
+        - microscope_detail_filter
+    load:
+      - ALG-GOV-001
+
+dependency_resolution:
+  recursive: true
+  max_depth: 4
+  cycle_policy: reject
+
+fallback:
+  if_no_route:
+    action: do_not_force_algorithm
+    note: use ordinary reasoning and record a candidate trigger only if repeated utility is observed
