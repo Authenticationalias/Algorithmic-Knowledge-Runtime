@@ -1,0 +1,65 @@
+registry_version: "0.1"
+runtime_name: "Algorithmic Knowledge Runtime"
+runtime_abbreviation: "AKR"
+
+asset_types:
+  - algorithm
+  - policy
+  - heuristic
+
+algorithms:
+  - id: ALG-SEC-001
+    name: Secure Information Handling Suitability
+    version: "0.2.0"
+    status: draft
+    domain: [security, privacy, risk_decision]
+    triggers:
+      - evaluating whether a service is suitable for a class of sensitive data
+      - deciding what information a user should entrust to a provider
+    path: algorithms/security/secure-information-suitability/algorithm.md
+    requires:
+      - ALG-RES-001
+      - ALG-GOV-001
+      - POL-EVID-001
+      - POL-MOD-001
+
+  - id: ALG-RES-001
+    name: Blind-Spot Expansion
+    version: "0.1.0"
+    status: draft
+    domain: [reasoning, research, risk_analysis]
+    triggers:
+      - risk of premature closure
+      - incomplete issue coverage
+      - need to search beyond the initial problem framing
+    path: algorithms/reasoning/blind-spot-expansion/algorithm.md
+    requires:
+      - POL-EVID-001
+      - POL-MOD-001
+
+  - id: ALG-GOV-001
+    name: Actor-Specific Information Value
+    version: "0.1.0"
+    status: draft
+    domain: [governance, decision_theory, communication]
+    triggers:
+      - multiple actors have different incentives
+      - deciding which facts are worth investigating or asking another actor to provide
+      - filtering microscope-level detail before external communication
+    path: algorithms/governance/actor-information-value/algorithm.md
+    requires:
+      - POL-EVID-001
+      - POL-MOD-001
+
+policies:
+  - id: POL-EVID-001
+    name: Evidence State Separation
+    version: "0.1.0"
+    status: draft
+    path: policies/evidence-separation.md
+
+  - id: POL-MOD-001
+    name: Modality Preservation
+    version: "0.1.0"
+    status: draft
+    path: policies/modality-preservation.md
