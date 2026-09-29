@@ -1,0 +1,13 @@
+[project]
+name = "algorithmic-knowledge-runtime"
+version = "0.1.0"
+description = "Canonical reusable reasoning assets with a derived SQLite runtime."
+requires-python = ">=3.11"
+dependencies = [
+  "PyYAML>=6.0,<7",
+  "jsonschema>=4.20,<5"
+]
+
+[tool.akr]
+registry = "registry/registry.yaml"
+runtime = "runtime/akr.sqlite3"
