@@ -1,0 +1,1226 @@
+# OpenAI DevDay 2026とAIデータ／ハーネス構成検討
+## チャット全体引継ぎ
+更新：2026-09-30 JST
+
+---
+
+## 0. このチャットで扱ったこと
+
+2026年9月29日に開催されたOpenAI DevDay 2026について、発表内容を確認した。
+
+そこから単なる新機能紹介ではなく、現在検討しているAI利用アーキテクチャ、
+
+- ChatGPT
+- ChatGPT Library
+- Google Drive
+- GitHub
+- Local Git
+- SQLite
+- MCP
+- Plugins
+- Codex
+- ローカルAI
+- 将来のChatGPT Space / Pages
+
+をどう再配置すべきか、という問題へ議論が進んだ。
+
+現在の中心論点は、
+
+**「Libraryの代替を一つ選ぶ」のではなく、Authority、保存、アクセス、作業コンテキスト、実行、UIを分離して考えるべきではないか**
+
+というもの。
+
+---
+
+# 1. DevDay 2026の確認済み事実
+
+OpenAI DevDay 2026はサンフランシスコで2026年9月29日に開催。
+
+Opening Keynoteは現地10:00 PDT。
+
+日本時間では、
+
+**2026年9月30日 02:00 JST**
+
+開始。
+
+当初「午前3時頃」という認識だったが、公式時刻換算では午前2時。OpenAIは今回を過去最大のDevDayとしており、20件超の発表があった。
+
+---
+
+# 2. 今回の発表全体の意味
+
+個々のモデル発表より重要なのは、OpenAI製品全体が、
+
+「チャットAI」
+
+から、
+
+**モデル
+→ ツール
+→ エージェント
+→ クラウド実行
+→ イベント駆動
+→ 永続的な共同作業空間**
+
+へ縦方向に統合され始めたこと。
+
+大まかには、
+
+Intelligence
+↓
+GPT-6系
+
+Execution
+↓
+Work / Codex / Agents API
+
+Persistent agents
+↓
+Dots
+
+Tool / Event layer
+↓
+Plugins / MCP Events
+
+Working context
+↓
+Library / Space / Pages
+
+Interface
+↓
+ChatGPT / Plugin Extensions / Desktop / Mobile
+
+という方向。
+
+OpenAI自身もChatGPTを、人間とagentが共同作業するshared surfaceとして拡張すると説明している。
+
+---
+
+# 3. GPT-6.1 Sol
+
+DevDayのモデル側の主要発表。
+
+GPT-6 Solを更新したモデルで、OpenAIによれば、
+
+- agentic coding
+- computer use
+- professional work
+
+などでGPT-6 Astraに近い性能を、Astra標準APIの約1/5の価格で提供する。
+
+API価格：
+
+- Input：$2 / 1M tokens
+- Cached input：$0.10 / 1M tokens
+- Output：$10 / 1M tokens
+
+特にcached input価格が低く、
+
+- 長いcontext
+- agent loop
+- RAG
+- Codex
+- 継続的なworkspace
+
+のような「同じ情報を繰り返し参照する処理」に有利。
+
+### ChatGPTでの提供状況
+
+2026-09-30現在、
+
+Plus / Pro / Business / Enterprise / Eduで、
+
+**ChatGPT Work と Codex**
+
+から利用可能。
+
+通常のChatにはまだ提供されていない。
+
+したがって、Plus利用者にとって即時影響がある新機能の一つ。
+
+---
+
+# 4. Codexのクラウド化
+
+Codexは今回さらに独立したクラウド実行系へ近づいた。
+
+新しい構成では、
+
+- PC
+- スマートフォン
+- クラウド
+- 任意の端末
+
+からCodexタスクを実行可能。
+
+Reusable Development Environmentsにより、環境設定や権限を再利用できる。
+
+Plusも利用対象。
+
+Codex CLIにも、
+
+- voice control
+- `/agents`
+- 複数task管理
+- session resume
+- worktree
+- prompt editing
+
+などが追加。
+
+Code Reviewも全プランに提供され、
+
+GitHub Pull RequestやGitLab Merge Requestのdiff等をChatGPT Desktopから確認できる。
+
+---
+
+# 5. Dots
+
+Dotsは常時稼働するagent。
+
+OpenAIの説明では、
+
+- ongoing responsibilities
+- 常時稼働
+- ユーザーの重要事項を理解
+- 人間が離れている間も作業
+
+を前提とする。
+
+提供：
+
+- Pro
+- Business Premium
+
+が中心。
+
+Enterprise / Edu / Healthcareでは管理者が有効化するbeta。
+
+**Plusには現状提供されない。**
+
+したがってこのチャットでは、
+
+「重要な将来方向だが、現時点でPlusからProへ移る理由として直ちに採用する必要はない」
+
+と整理した。
+
+---
+
+# 6. Plugin Extensions
+
+Pluginsが単なる「外部API接続」ではなくなる。
+
+Plugin Extensionsでは、
+
+- ChatGPT sidebar内に専用home
+- interactive panel
+- 独自UI
+- 独自file viewer
+
+などを作れる。
+
+全プラン対象。
+
+これは重要。
+
+従来、
+
+ChatGPT
++
+別Web UI
+
+として作る必要があったものの一部が、
+
+ChatGPT
++
+Plugin Extension
+
+で実装可能になる。
+
+したがってOpen WebUI等の独立front-endが不要になる用途も増える可能性がある。
+
+一方、
+
+- 完全ローカル
+- オフライン
+- 非OpenAIモデル
+- 高度に独自なUI
+
+では独立front-endの価値は残る。
+
+---
+
+# 7. MCP Events
+
+今回の重要発表の一つ。
+
+従来MCPは主に、
+
+AI
+→
+外部tool
+
+という呼び出し経路だった。
+
+MCP Eventsでは、
+
+外部system
+→ event
+→ ChatGPT automation
+
+という逆方向が可能になる。
+
+例：
+
+GitHub / project board
+↓
+新task発生
+↓
+MCP Event
+↓
+ChatGPT
+↓
+関連文書取得
+↓
+計画作成
+
+OpenAI自身も、project boardに新しいtaskが来た際、ChatGPTがlinked documentsを読み、ユーザー不在中にplanを作成する例を示している。
+
+全プラン対象。
+
+これにより、
+
+定期polling
+
+より、
+
+**event-driven architecture**
+
+へ移せる用途が増える。
+
+---
+
+# 8. ChatGPT Space / Pages
+
+今回、新しい問題を生んだ部分。
+
+ChatGPT Spaceは、
+
+- teammates
+- ChatGPT
+- dot
+- shared knowledge
+
+を共有しながら仕事を進めるworkspace。
+
+OpenAIは「AIと仕事をするための新しいhome」と説明している。
+
+提供：
+
+- Pro
+- Business
+- Enterprise
+
+Plusは現時点で対象外。
+
+Pagesも同じくPro以上。
+
+Pagesは、
+
+- writing
+- research
+- chart
+- image
+- visualization
+
+などを人間とagentが共同編集するdocument surface。
+
+---
+
+# 9. 重要な修正：SpaceはLibraryの後継ではない
+
+議論途中でSpaceを「Libraryの後継」と表現したが、これは修正。
+
+2026-09-30現在、**Libraryは独立機能として存続している。**
+
+Libraryでは、
+
+- ChatGPTへuploadしたfile
+- ChatGPTが生成したfile
+- Google Drive等の接続file
+
+を検索・再利用できる。
+
+PlusのLibrary容量は20GB。
+
+Google Drive fileはLibrary内に見えるが、Drive上の原本との接続を維持する。
+
+したがって現在は、
+
+**Library = file / asset layer**
+
+**Space = shared working-context / collaborative workspace**
+
+と区別する。
+
+将来的に両者が統合される可能性はあるが、現在のAuthority設計では前提にしない。
+
+---
+
+# 10. Library + Google Driveの既存価値
+
+以前から重要だった構造：
+
+ChatGPT Library
+↕
+Google Drive
+
+LibraryからDriveのfile / folderを閲覧・検索できる。
+
+folderを指定して、その中の複数fileを横断してChatGPTに処理させることもできる。
+
+対応している場合は、ChatGPTからDrive原本を直接更新することも可能。
+
+つまり、
+
+ChatGPT内部生成data
++
+Google Drive上の外部data
+
+をAIが比較的同じinterfaceから扱える点は引き続き価値がある。
+
+Space追加後も、この機能は消えていない。
+
+---
+
+# 11. Sign in with ChatGPT
+
+ChatGPT accountを外部serviceのidentity providerとして使用できるようになった。
+
+さらに対応partnerでは、
+
+ChatGPT Plus / Proの利用枠を外部tool側でも使用可能。
+
+DevDay時点では16 partnerへのplan allowance共有が発表され、
+
+- Devin
+- Notion
+- Vercel
+- T3
+- OpenClaw
+- Dactyl
+
+等が挙げられた。
+
+重要な区別：
+
+### identity login
+
+Sign in with ChatGPT自体。
+
+### plan usage
+
+対応partnerでChatGPT利用枠を共有する機能。
+
+identityはより広く利用可能だが、plan allowance共有は参加serviceとPlus / Proに限定される。
+
+これは、
+
+「モデル契約」と「ハーネス契約」
+
+を分離できる可能性を高める。
+
+---
+
+# 12. Pro 500 / Ultrafast
+
+新しいPro 500では、
+
+ChatGPT Plusの25倍のusage allowance
+
+とUltrafast accessが提供される。
+
+Ultrafastは、
+
+Codexで最大約300 token/s、標準比最大8倍、
+
+APIで最大6倍
+
+とOpenAIが説明している。
+
+ただし現時点では高負荷ユーザー向け。
+
+---
+
+# 13. その他のDevDay発表
+
+今回確認したその他の重要項目：
+
+### Codex Security Cloud
+GitHub repositoryをscanし、
+
+- finding調査
+- duplicate除去
+- fix準備
+- 継続scan
+
+などをcloudで実施。
+
+Pro以上。
+
+### Decisions API
+
+有限個の事前定義されたanswerからLunaに選択させるAPI。
+
+classification / routing / agent next-action等を想定。
+
+自由agentとは逆に、
+
+**decision spaceを狭くして信頼性を上げる設計**
+
+として興味深い。
+
+### Agents API + Computer Use
+
+Computer Use、multi-agent、tool search、tool calling、context compactionなどを提供。
+
+APIから利用可能。
+
+ChatGPT Work / Codexでの統合提供はPro 500 / Enterprise。
+
+### Private Intelligence
+
+企業向け。
+
+Zero Data Retention with Private Safety Processingや、今後のPrivate Inferenceを発表。
+
+Confidential Computing方向も含む。
+
+---
+
+# 14. このチャットで生じたアーキテクチャ上の問題
+
+DevDay後、
+
+「Libraryの後継は何か」
+
+という問題が出た。
+
+しかし検討を進めると、
+
+**一つの保存先を選ぶ問題として扱うこと自体が適切ではない**
+
+という方向になった。
+
+理由：
+
+- Library
+- Space
+- Drive
+- Git
+- SQLite
+- MCP
+- Plugins
+- Codex
+
+は同じlayerに存在しない。
+
+---
+
+# 15. 現在のレイヤー分離
+
+現在の最も有力な整理。
+
+## Layer 1：Authority / Persistent Data
+
+長期的な原本・意味・履歴。
+
+候補：
+
+- Git / GitHub
+- Local Git
+- SQLite
+- Google Drive
+
+ここを特定AIベンダーのworkspaceだけに依存させない。
+
+---
+
+## Layer 2：Representation / Data Format
+
+用途別形式。
+
+Human-readable：
+
+- Markdown
+- YAML
+
+Structured semantic state：
+
+- SQLite
+
+Interchange：
+
+- JSON / JSONL
+
+大量分析：
+
+- Parquet
+- DuckDB
+
+Office / document：
+
+- Google Docs
+- Sheets
+- Slides
+- PDF
+
+Semantic retrieval：
+
+- embeddings
+- vector index
+
+一種類に統一する必要はない。
+
+---
+
+## Layer 3：Access
+
+AIがAuthorityへ到達するためのlayer。
+
+- MCP
+- Plugins
+- GitHub connector
+- Google Drive connector/API
+
+特に重要：
+
+**MCPはStorageではない。**
+
+MCPは、
+
+「AIがStorageやapplicationへアクセス・操作するためのprotocol/interface」
+
+として扱う。
+
+したがって、
+
+SQLite vs MCP
+
+という比較はしない。
+
+---
+
+## Layer 4：Working Context
+
+現在進行中の仕事をAIと人間が共有する面。
+
+- ChatGPT Library
+- ChatGPT Space
+- Pages
+
+ただしLibraryとSpaceは役割が違う。
+
+Library：
+file asset / retrieval
+
+Space：
+shared working context / workspace
+
+---
+
+## Layer 5：Execution
+
+実際に作業するagent/runtime。
+
+- ChatGPT Work
+- Codex
+- Automations
+- Dots
+- Agents API
+- Local AI
+
+---
+
+## Layer 6：UI
+
+人間とのinteraction surface。
+
+- ChatGPT
+- Plugin Extensions
+- Codex Desktop
+- CLI
+- Open WebUI
+- custom local web UI
+
+---
+
+# 16. GitHubとLocal Git
+
+このチャットでは、
+
+「GitHubに置くかPC内部に置くか」
+
+という問題も出た。
+
+結論：
+
+**二者択一ではない。**
+
+Gitは分散型なので、
+
+Mac
+└─ Local Git
+     ↓ push/pull
+GitHub
+
+という構造が本来の使い方。
+
+Local cloneもrepository履歴を持つ。
+
+可能な構成：
+
+### GitHub canonical
+
+GitHub
+= canonical authority
+
+Local Git
+= clone / execution environment
+
+利点：
+
+- cloud AIからアクセス容易
+- Codex/GitHub連携
+- version sharing
+- CI
+- multi-agent interoperability
+
+### Local canonical
+
+Local Git
+= canonical authority
+
+GitHub
+= replication / collaboration / selected publishing
+
+利点：
+
+- privacy
+- offline
+- vendor independence
+
+したがって今後は、
+
+「GitHubかLocalか」
+
+ではなく、
+
+**何をどこまでremote replicaへ出すか**
+
+という問題になる。
+
+---
+
+# 17. SQLite
+
+SQLiteは依然有力。
+
+役割は単純なfile storageではなく、
+
+**structured semantic state**
+
+として考える。
+
+例：
+
+- Entity
+- Relationship
+- Evidence
+- Source
+- Decision
+- Dependency
+- Status
+- Version
+- Confidence
+- Provenance
+- Algorithm
+
+Markdownだけで長期運用すると、
+
+- relation
+- duplication
+- query
+- status
+- provenance
+- machine update
+
+の管理が難しくなる。
+
+SQLiteはこの層を担当できる。
+
+---
+
+# 18. SQLite + MCP
+
+SQLite fileそのものをモデルに毎回渡す必要はない。
+
+MCP経由で例えば、
+
+- get_schema
+- search_entities
+- get_entity
+- get_relationships
+- append_evidence
+- update_status
+- query
+- export
+
+などをtool化できる。
+
+構造：
+
+SQLite
+↓
+MCP server
+↓
+ChatGPT / Codex / Local AI / 他AI
+
+利点：
+
+- schemaを隠蔽できる
+- AIに直接SQLを書かせなくてもよい
+- read/write権限を限定できる
+- 複数AIから共通利用できる
+- DB内部構造変更の影響を吸収できる
+
+---
+
+# 19. SQLite + Git
+
+SQLiteだけでは人間可読のdiffやGit履歴との相性に課題がある。
+
+そこで、
+
+SQLite
+↓ export
+Markdown / JSONL
+↓
+Git
+
+という二重表現も候補。
+
+つまり、
+
+SQLite
+= machine-oriented structured state
+
+Git-tracked Markdown / JSONL
+= human-readable lineage / interchange
+
+という役割分担。
+
+これはまだ確定案ではなく検討候補。
+
+---
+
+# 20. ChatGPT Spaceの位置づけ
+
+現在最も有力な考え：
+
+**SpaceをAuthorityにはせず、Materialized Workspaceとして扱う。**
+
+つまり、
+
+Git ─────┐
+SQLite ──┼→ Access layer → Space
+Drive ───┘
+
+必要な情報をAuthorityから集め、
+
+Spaceには、
+
+- 現在のproject
+- active task
+- Pages
+- working documents
+- agent output
+- task state
+
+だけを展開する。
+
+この方法なら、将来OpenAIがSpaceやLibraryを変更しても、
+
+Authorityは残る。
+
+---
+
+# 21. ChatGPT UIからLocal Gitを育てる可能性
+
+このチャットでは、
+
+「ChatGPT UIからLocal Gitを育てることも可能なのではないか」
+
+という話が出た。
+
+これは有力だが、現時点では以下を区別する。
+
+確認済み：
+
+ChatGPT / Codex
+↓
+Git repository操作
+
+CodexはGit workflow、worktree、review等を強化している。
+
+未確認：
+
+**SpaceそのものがLocal Git repositoryのnative GUIになること。**
+
+したがって、
+
+ChatGPT
+→ Codex
+→ Local Git
+
+は有力。
+
+Space
+= Git GUI
+
+とはまだ定義しない。
+
+---
+
+# 22. Plugin Extensionと独自data
+
+Plugin Extensionsにより、
+
+SQLite等のbackendをChatGPT内に独自UIとして見せる構成も考えられる。
+
+例：
+
+SQLite
+↓
+MCP / plugin backend
+↓
+Plugin Extension
+↓
+ChatGPT sidebar / panel
+
+これにより、
+
+databaseそのものはLocal / server側に置きつつ、
+
+ChatGPT内では、
+
+- entity browser
+- relationship viewer
+- evidence viewer
+- status editor
+
+等を実装できる可能性がある。
+
+---
+
+# 23. ローカルAIの位置
+
+DevDayによってLocal AIの価値が消えたわけではない。
+
+むしろ役割を分離しやすくなった。
+
+Cloud frontier model：
+
+- difficult reasoning
+- synthesis
+- agent orchestration
+- cross-tool work
+- computer use
+
+Local AI：
+
+- private data
+- bulk processing
+- extraction
+- classification
+- embeddings
+- OCR後処理
+- offline use
+- high-volume inexpensive inference
+
+構造例：
+
+GPT-6.x
+↓
+Orchestrator
+├─ Git
+├─ Drive
+├─ Web
+└─ Local inference
+       ↓
+   LM Studio / Ollama
+       ↓
+   local models
+
+---
+
+# 24. ローカル接続の未解決問題
+
+Cloud側ChatGPTから、
+
+`127.0.0.1:1234`
+
+等のlocalhost LM Studio APIへ直接到達することはできない。
+
+したがって必要になる可能性がある：
+
+Cloud ChatGPT
+↓
+MCP / secure bridge
+↓
+Mac
+↓
+LM Studio
+
+あるいは、
+
+ChatGPT Desktop
+↓
+local MCP
+↓
+LM Studio
+
+このcloud/local boundaryは、DevDay後も独立した設計問題。
+
+---
+
+# 25. 現在の暫定アーキテクチャ
+
+現時点での概念構造：
+
+```text
+              HUMAN
+                │
+                ▼
+        ChatGPT / UI Layer
+                │
+     ┌──────────┼──────────┐
+     │          │          │
+ Plugin Ext.  Codex      Space
+     │          │          │
+     └──────────┼──────────┘
+                │
+          MCP / Connectors
+                │
+     ┌──────────┼───────────┐
+     │          │           │
+     ▼          ▼           ▼
+ Git/GitHub   SQLite    Google Drive
+     │
+     ▼
+ Local Git
+```
+
+Local AIは別branchとして、
+
+MCP / local runtime
+↓
+LM Studio / Ollama
+↓
+Local Models
+
+へ接続可能。
+
+---
+
+# 26. 現在採用している原則
+
+### A. AuthorityとWorkspaceを分離する
+
+Spaceが便利でも、長期原本をSpaceだけに置かない。
+
+---
+
+### B. StorageとProtocolを分離する
+
+Git / SQLite / Drive
+=
+storage / authority
+
+MCP
+=
+access protocol
+
+Plugin Extension
+=
+UI
+
+Codex
+=
+execution
+
+---
+
+### C. GitHubとLocal Gitを対立させない
+
+同じGit repositoryの複製・公開範囲として扱う。
+
+---
+
+### D. OpenAI固有機能にCanonical Knowledgeをロックインしない
+
+ChatGPTだけでなく、
+
+- local AI
+- 将来の他社AI
+- CLI
+- custom agent
+
+から共通Authorityへ到達できる状態を維持する。
+
+---
+
+### E. 単一formatへ統一しない
+
+用途に応じて、
+
+Git
+SQLite
+Markdown
+JSONL
+Drive documents
+
+を使い分ける。
+
+---
+
+# 27. Plus利用者として今回重要なもの
+
+現在Plusで実用上重要なのは：
+
+1. GPT-6.1 Sol
+   - Work / Codex
+   - 通常Chatには未提供
+
+2. Codex cloud
+   - Plus対応
+
+3. Codex CLI改善
+
+4. Code Review
+
+5. Plugin Extensions
+   - 全プラン
+
+6. MCP Events
+   - 全プラン
+
+7. Sign in with ChatGPT
+   - Plusで参加toolへのplan usage共有可能
+
+一方、
+
+- Space
+- Pages
+- Dots
+- Codex Security Cloud
+
+等はPlusでは現時点で利用できないものが多い。
+
+---
+
+# 28. このチャットで修正された点
+
+### 修正1
+「DevDayは日本時間午前3時」
+
+→ 公式開始時刻は午前2時。
+
+### 修正2
+「SpaceはLibraryの後継」
+
+→ 現時点では不正確。
+
+Libraryは現在も存続し、Google Drive等のconnected storageも扱う。
+
+Spaceはshared AI workspaceとして別機能。
+
+### 修正3
+「MCPもLibrary代替候補」
+
+→ layerが違う。
+
+MCPはstorageではなくaccess / protocol layer。
+
+### 修正4
+「GitHubかLocal Gitか」
+
+→ 基本的に二択ではない。
+
+Gitはdistributedなので、両者を組み合わせる。
+
+---
+
+# 29. 現在未決定のこと
+
+以下はまだ決めない。
+
+1. GitHubをcanonicalにするかLocal Gitをcanonicalにするか
+2. SQLite schemaの最終形
+3. SQLiteをprimary semantic modelにするか
+4. Markdown / JSONLとの同期方式
+5. Spaceをどの程度使うか
+6. LibraryとSpaceの将来統合への対応
+7. Plugin Extensionを独自UIとしてどこまで利用するか
+8. Local AI用MCP bridgeの方式
+9. Cloud / Local credential境界
+10. Google Drive / Git / SQLite間の重複管理
+11. MCP Eventsをどのevent sourceに導入するか
+12. GitHubとLocal repositoryのpublish policy
+13. ChatGPT subscription allowanceを外部toolへどの程度流すか
+
+---
+
+# 30. 次チャットでの前提
+
+次のチャットでは、
+
+「どのサービスを一つ選ぶか」
+
+から開始しない。
+
+まず、
+
+**Authority
+→ Access
+→ Working Context
+→ Execution
+→ UI**
+
+というlayer構造を維持する。
+
+その上で、
+
+Git / SQLite / Drive / Library / Space / MCP / Plugins / Codex / Local AI
+
+を各layerに配置して評価する。
+
+また、DevDay直後で仕様が動いているため、
+
+- Library
+- Space
+- Plugins
+- MCP Events
+- Codex
+- Sign in with ChatGPT
+
+については、設計を固定する前に最新公式仕様を再確認する。
+
+---
+
+## 一文要約
+
+DevDay 2026によって既存構成が置き換えられたのではなく、OpenAI側に**永続agent・event-driven execution・shared AI workspace・ChatGPT内拡張UI**という新しい面が追加された。
+
+現在の方針は、それらをGit / SQLite / Google Drive等のベンダー非依存Authorityの上に載せ、ChatGPT固有のLibrary / Space / Codexを作業・実行・UI層として使う構造を検討すること。

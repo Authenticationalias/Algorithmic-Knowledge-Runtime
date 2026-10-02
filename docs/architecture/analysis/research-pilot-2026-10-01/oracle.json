@@ -1,0 +1,79 @@
+{
+  "role": "predeclared_research_oracle",
+  "scope": "fixed source header/reference integrity; no natural-language meaning equivalence claim",
+  "source_ref": "0f22fec375af8001afa4a2cd948ba205c409ad3d",
+  "confirmed_by": "lead read fixed registry and 5 asset bodies before comparison implementation",
+  "assets": [
+    {
+      "id": "ALG-SEC-001",
+      "version": "0.2.0",
+      "path": "algorithms/security/secure-information-suitability/algorithm.md",
+      "requires": [
+        "ALG-RES-001",
+        "ALG-GOV-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "git_blob_sha": "d07f981fe31dd23ca35f9da60c68de6b5233ec9e"
+    },
+    {
+      "id": "ALG-RES-001",
+      "version": "0.1.0",
+      "path": "algorithms/reasoning/blind-spot-expansion/algorithm.md",
+      "requires": [
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "git_blob_sha": "2af71e9b388b787e67abf1b97d46e40bbed67628"
+    },
+    {
+      "id": "ALG-GOV-001",
+      "version": "0.1.0",
+      "path": "algorithms/governance/actor-information-value/algorithm.md",
+      "requires": [
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "git_blob_sha": "4c91f8b0f080e8da7a7e8bbb61f5f8942bf9ead8"
+    },
+    {
+      "id": "POL-EVID-001",
+      "version": "0.1.0",
+      "path": "policies/evidence-separation.md",
+      "requires": [],
+      "git_blob_sha": "bbd6595d9171c21ac2f59b9ea8aef1c77f365381"
+    },
+    {
+      "id": "POL-MOD-001",
+      "version": "0.1.0",
+      "path": "policies/modality-preservation.md",
+      "requires": [],
+      "git_blob_sha": "d1f694f78bb98f32cb3141ff52d907abb7f5a837"
+    }
+  ],
+  "expected_closures": {
+    "ALG-RES-001": [
+      "ALG-RES-001",
+      "POL-EVID-001",
+      "POL-MOD-001"
+    ],
+    "ALG-GOV-001": [
+      "ALG-GOV-001",
+      "POL-EVID-001",
+      "POL-MOD-001"
+    ],
+    "ALG-SEC-001": [
+      "ALG-SEC-001",
+      "ALG-RES-001",
+      "ALG-GOV-001",
+      "POL-EVID-001",
+      "POL-MOD-001"
+    ]
+  },
+  "mutation_acceptance": "Both independent markers remain when accepted; otherwise reject publication without silent loss.",
+  "recovery_acceptance": "Recovered bytes match expected blobs and declared IDs/versions/closure. Unknown intent or unavailable trusted source stays incomplete.",
+  "limitations": [
+    "Faults are synthetic and schedules deterministic.",
+    "No model trial, semantic evaluator, power-loss durability, scale or maintenance-cost benchmark."
+  ]
+}

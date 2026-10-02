@@ -1,0 +1,345 @@
+{
+  "role": "bounded_research_observations",
+  "source_ref": "0f22fec375af8001afa4a2cd948ba205c409ad3d",
+  "environment": {
+    "python": "3.9.6",
+    "git": "git version 2.54.0 (Apple Git-157)"
+  },
+  "mutation": [
+    {
+      "case": "old_parent_non_fast_forward",
+      "publication_accepted": false,
+      "markers_retained": {
+        "A": true,
+        "B": false
+      },
+      "silent_lost_update": false,
+      "previous_accepted_state_preserved_on_rejection": true,
+      "common_oracle_met": true,
+      "detail": "actual local Git push; non-fast-forward rejection"
+    },
+    {
+      "case": "current_parent_stale_full_payload",
+      "publication_accepted": true,
+      "markers_retained": {
+        "A": false,
+        "B": true
+      },
+      "silent_lost_update": true,
+      "previous_accepted_state_preserved_on_rejection": null,
+      "common_oracle_met": false,
+      "detail": "fast-forward accepted; parent freshness does not establish payload freshness"
+    },
+    {
+      "case": "three_way_merge_independent_edits",
+      "publication_accepted": true,
+      "markers_retained": {
+        "A": true,
+        "B": true
+      },
+      "silent_lost_update": false,
+      "previous_accepted_state_preserved_on_rejection": null,
+      "common_oracle_met": true,
+      "detail": "actual Git merge; independent text changes only"
+    },
+    {
+      "case": "expected_base_precondition",
+      "publication_accepted": false,
+      "markers_retained": {
+        "A": true,
+        "B": false
+      },
+      "silent_lost_update": false,
+      "previous_accepted_state_preserved_on_rejection": true,
+      "common_oracle_met": true,
+      "detail": "actual Git ref old-value precondition; not a semantic transaction"
+    },
+    {
+      "case": "clean_merge_broken_reference",
+      "git_merge_accepted": true,
+      "missing_references": [
+        "ALG-GOV-001"
+      ],
+      "reference_oracle_met": false,
+      "detail": "structural dependency counterexample; no general meaning checker"
+    }
+  ],
+  "context": [
+    {
+      "seed": "ALG-RES-001",
+      "strategy": "selected_only",
+      "loaded_ids": [
+        "ALG-RES-001"
+      ],
+      "missing_declared_ids": [
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 2003,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": false
+    },
+    {
+      "seed": "ALG-RES-001",
+      "strategy": "declared_closure",
+      "loaded_ids": [
+        "ALG-RES-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 4117,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    },
+    {
+      "seed": "ALG-RES-001",
+      "strategy": "all_registered_assets",
+      "loaded_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [
+        "ALG-GOV-001",
+        "ALG-SEC-001"
+      ],
+      "payload_bytes": 11732,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    },
+    {
+      "seed": "ALG-GOV-001",
+      "strategy": "selected_only",
+      "loaded_ids": [
+        "ALG-GOV-001"
+      ],
+      "missing_declared_ids": [
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 2365,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": false
+    },
+    {
+      "seed": "ALG-GOV-001",
+      "strategy": "declared_closure",
+      "loaded_ids": [
+        "ALG-GOV-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 4479,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    },
+    {
+      "seed": "ALG-GOV-001",
+      "strategy": "all_registered_assets",
+      "loaded_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [
+        "ALG-RES-001",
+        "ALG-SEC-001"
+      ],
+      "payload_bytes": 11732,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    },
+    {
+      "seed": "ALG-SEC-001",
+      "strategy": "selected_only",
+      "loaded_ids": [
+        "ALG-SEC-001"
+      ],
+      "missing_declared_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 5250,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": false
+    },
+    {
+      "seed": "ALG-SEC-001",
+      "strategy": "declared_closure",
+      "loaded_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 11732,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    },
+    {
+      "seed": "ALG-SEC-001",
+      "strategy": "all_registered_assets",
+      "loaded_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ],
+      "missing_declared_ids": [],
+      "extra_to_declared_closure": [],
+      "payload_bytes": 11732,
+      "registry_bytes_constant": 1845,
+      "declared_closure_oracle_met": true
+    }
+  ],
+  "recovery": [
+    {
+      "case": "complete_checkpoint",
+      "process": "fresh child",
+      "expected_status": "COMPLETE",
+      "oracle_met": true,
+      "status": "COMPLETE",
+      "repair_source_entries_checked": 0,
+      "detected": [],
+      "unresolved_requires": [],
+      "complete_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ]
+    },
+    {
+      "case": "partial_checkpoint",
+      "process": "fresh child",
+      "expected_status": "COMPLETE",
+      "oracle_met": true,
+      "status": "COMPLETE",
+      "repair_source_entries_checked": 3,
+      "detected": [
+        {
+          "id": "ALG-GOV-001",
+          "reason": "MISSING"
+        },
+        {
+          "id": "POL-EVID-001",
+          "reason": "MISSING"
+        },
+        {
+          "id": "POL-MOD-001",
+          "reason": "MISSING"
+        }
+      ],
+      "unresolved_requires": [],
+      "complete_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ]
+    },
+    {
+      "case": "partial_without_intake",
+      "process": "fresh child",
+      "expected_status": "UNKNOWN_INTAKE",
+      "oracle_met": true,
+      "status": "UNKNOWN_INTAKE",
+      "repair_source_entries_checked": 0,
+      "reason": "saved payloads do not identify intended job scope and source revision"
+    },
+    {
+      "case": "same_id_other_version",
+      "process": "fresh child",
+      "expected_status": "COMPLETE",
+      "oracle_met": true,
+      "status": "COMPLETE",
+      "repair_source_entries_checked": 1,
+      "detected": [
+        {
+          "id": "POL-MOD-001",
+          "reason": "ID_OR_VERSION_MISMATCH"
+        }
+      ],
+      "unresolved_requires": [],
+      "complete_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ]
+    },
+    {
+      "case": "modified_bytes_same_header",
+      "process": "fresh child",
+      "expected_status": "COMPLETE",
+      "oracle_met": true,
+      "status": "COMPLETE",
+      "repair_source_entries_checked": 1,
+      "detected": [
+        {
+          "id": "POL-MOD-001",
+          "reason": "BYTE_MISMATCH"
+        }
+      ],
+      "unresolved_requires": [],
+      "complete_ids": [
+        "ALG-GOV-001",
+        "ALG-RES-001",
+        "ALG-SEC-001",
+        "POL-EVID-001",
+        "POL-MOD-001"
+      ]
+    },
+    {
+      "case": "partial_source_unavailable",
+      "process": "fresh child",
+      "expected_status": "INCOMPLETE",
+      "oracle_met": true,
+      "status": "INCOMPLETE",
+      "repair_source_entries_checked": 2,
+      "detected": [
+        {
+          "id": "ALG-GOV-001",
+          "reason": "MISSING"
+        },
+        {
+          "id": "POL-EVID-001",
+          "reason": "MISSING"
+        },
+        {
+          "id": "POL-MOD-001",
+          "reason": "MISSING"
+        }
+      ],
+      "unavailable": [
+        "POL-MOD-001"
+      ]
+    }
+  ],
+  "limits": [
+    "Faults are synthetic and schedules deterministic.",
+    "No model trial, semantic evaluator, power-loss durability, scale or maintenance-cost benchmark."
+  ]
+}

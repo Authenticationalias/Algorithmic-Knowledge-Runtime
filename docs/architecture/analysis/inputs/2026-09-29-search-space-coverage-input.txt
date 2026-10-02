@@ -1,0 +1,593 @@
+```text
+AKR（Algorithmic Knowledge Runtime）の上流Architecture検討を継続してください。
+
+今回の目的は、既存候補から選定を進めることではありません。
+
+既存の候補集合そのものに早期閉鎖・探索漏れがないかを監査する
+「Architecture Search-Space Coverage Audit」
+を実施してください。
+
+前回までの分析結果は参照して構いませんが、
+既存候補を正解候補として前提化しないでください。
+
+────────────────
+■ 背景
+────────────────
+
+現在のAKRは、チャット、agent、local AI、cloud AI、将来のAI runtime等で生成・発見された有用なアルゴリズムを外部化し、
+
+AI自身が長期的に
+
+- 登録
+- 発見
+- 選択
+- 理解
+- 再利用
+- 組み合わせ
+- 評価
+- 改修
+- refactoring
+- migration
+- version管理
+- rollback
+- supersede
+- deprecate
+- repair
+
+できる基盤を目指している。
+
+アルゴリズム数は将来的に数百、数千、それ以上を想定する。
+
+全ライフサイクルにAIが介在し、
+人間による日常的な手編集・整理・同期管理は主要前提としない。
+
+保守管理性は、
+AIが大量の資産を継続的に更新・同期・検証・移行・修復・再構築しやすいこと
+として評価する。
+
+
+────────────────
+■ 今回の問題意識
+────────────────
+
+これまで、
+
+- JSON
+- JSONL
+- YAML
+- XML
+- Markdown
+- SQLite
+- PostgreSQL
+- DuckDB
+- Parquet
+- RDF
+- JSON-LD
+- graph database
+- vector index
+- event sourcing
+- typed DSL
+- IR
+- Protocol Buffers
+- CBOR
+- S1000D
+- DITA
+- OSLC
+- W3C PROV
+- その他
+
+多数の方式が候補に上がっている。
+
+また、上流Architectureとして、
+
+- 一つの主表現から他形式を生成する方式
+- 複数の規範表現を共同管理する方式
+- 候補固有の意味モデルを並存させる方式
+
+等も検討された。
+
+しかし、これらの候補集合は、
+「目的から独立な設計次元をすべて導出し、その各次元の選択肢を体系的に網羅した結果」
+として得られたとは限らない。
+
+過去会話や既知方式から候補が追加されてきたため、
+探索空間が早期に閉じている可能性を監査したい。
+
+
+────────────────
+■ 今回の絶対条件
+────────────────
+
+1. 既存候補から選ばないこと。
+
+最初にJSON、SQLite、RDF等の形式名を並べて比較しない。
+
+まず目的・制約から、
+必要な独立設計次元を再導出する。
+
+
+2. 候補形式と設計次元を混同しないこと。
+
+例えば、
+
+- serialization
+- semantic model
+- storage
+- indexing
+- retrieval
+- execution
+- versioning
+- provenance
+- synchronization
+- distribution
+- validation
+- interface
+
+等を別軸として扱う。
+
+JSONとPostgreSQLとvector indexのような、
+異なる責務の方式を一列で順位付けしない。
+
+
+3. AI-native前提を明示的に反映すること。
+
+人間中心時代に高コストだった方式でも、
+AIが生成・変換・検証・migration・repairを担当することで評価が変わる可能性を検討する。
+
+逆に、
+human readability / manual editing convenience
+を主要な評価理由にしない。
+
+
+4. GitHub＋MCPを主要運用経路として考慮すること。
+
+想定する基本運用は、
+
+AI
+  ↓
+Chat / Agent Harness
+  ↓
+MCP等のtool interface
+  ↓
+GitHub repository
+  ↓
+AKR assets / candidate representations / evaluation artifacts
+
+である。
+
+ただしMCPやGitHubそのものをCanonical semantic modelにはしない。
+
+
+────────────────
+■ UI / UXに相当する新しい評価概念
+────────────────
+
+今回、AI-native systemにおけるUI/UXを、次のような概念として再定義して評価に導入したい。
+
+既存の人間向けUI/UX用語と混同しないよう、
+必要なら別名称を提案してよい。
+
+
+### Interface Capacity
+
+そのinterface / tool / protocol / representationが、
+AIに公開できる有効能力の上限。
+
+例：
+
+- 何を観測できるか
+- 何を変更できるか
+- どの粒度で取得できるか
+- transaction / query / relation / validation等をどこまで利用できるか
+- GitHub、MCP、DB、graph等の機能をAIへどこまで露出できるか
+
+
+### Realization Efficiency
+
+公開されている能力のうち、
+実際にAIがどの程度効率よく正確に利用できるか。
+
+概念的には、
+
+Realization Efficiency
+=
+実際にAIが引き出した有効能力
+/
+Interface Capacity
+
+と考えられる。
+
+例えば、
+
+能力上限の高いDBであっても、
+
+- schema理解が難しい
+- tool call回数が多い
+- context消費が大きい
+- query生成失敗が多い
+- repairが難しい
+
+ならRealization Efficiencyは低くなり得る。
+
+逆に、
+理論上の表現力が低くても、
+AIが極めて安定して利用できる方式は実運用上有利になり得る。
+
+
+必要なら、
+
+Effective Utility
+=
+Capability Ceiling
+×
+Realization Efficiency
+-
+Maintenance Cost
+-
+Failure Cost
+
+のような評価モデルを発展させてよい。
+
+ただし、数値式を無理に固定しない。
+
+
+────────────────
+■ 今回実施する監査
+────────────────
+
+以下の順序で実施してください。
+
+
+1. 形式名をいったん隠す
+
+JSON、SQLite、RDF等を一旦忘れ、
+AKRの目的から必要能力を再導出する。
+
+
+2. 独立設計次元を抽出する
+
+最低でも以下のような軸を疑い、
+不足があれば追加する。
+
+- identity
+- semantic authority
+- semantic representation
+- revision / versioning
+- mutation model
+- history model
+- lineage / provenance
+- dependency representation
+- conflict handling
+- applicability
+- validation
+- execution semantics
+- storage
+- addressing
+- indexing
+- retrieval
+- query
+- composition
+- synchronization
+- concurrency
+- transaction
+- distribution
+- packaging
+- migration
+- repair
+- rollback
+- observability
+- evaluation
+- model adaptation
+- runtime adaptation
+- interface / tool exposure
+- access protocol
+- caching
+- derived representations
+- archival / long-term preservation
+
+これらを鵜呑みにせず、
+本当に独立した設計次元か再評価する。
+
+
+3. 各設計次元について、選択肢を列挙する
+
+例：
+
+history model:
+- mutable snapshot
+- immutable revision chain
+- append-only log
+- event sourcing
+- hybrid
+
+semantic authority:
+- single authoritative representation
+- scoped authority
+- multi-authority
+- federated authority
+- candidate-based authority
+
+addressing:
+- path-based
+- stable ID
+- content-addressed
+- hybrid
+
+のように、
+形式名ではなく設計方式として整理する。
+
+
+4. 設計次元間の依存関係を分析する
+
+完全に独立でない軸について、
+
+- 強く結合するもの
+- 直交に近いもの
+- 一方の選択が他方を制約するもの
+
+を明示する。
+
+
+5. 既存の形式・標準を逆引きする
+
+設計次元と必要能力を出した後で初めて、
+
+- JSON
+- XML
+- SQLite
+- PostgreSQL
+- RDF
+- graph DB
+- S1000D
+- DITA
+- OSLC
+- W3C PROV
+- event sourcing
+- typed IR
+- その他
+
+を、
+
+「どの設計能力を実現する方式・標準なのか」
+
+として対応付ける。
+
+既存候補リストにない有力方式も探索する。
+
+
+6. 他分野から設計パターンを探索する
+
+特に以下の分野を横断してよい。
+
+- database systems
+- compiler / IR
+- package managers
+- build systems
+- distributed systems
+- version control
+- knowledge representation
+- semantic web
+- scientific data systems
+- aviation / aerospace
+- defense
+- industrial lifecycle management
+- configuration management
+- digital preservation
+- provenance systems
+- reproducible research
+- workflow engines
+- autonomous agent infrastructure
+
+形式そのものを採用する必要はない。
+
+AKRへ転用可能な設計原則・構造・失敗知見を抽出する。
+
+
+7. Search-Space Coverageを監査する
+
+最終的に、
+
+- どの設計次元を十分探索できているか
+- どこが弱いか
+- 既存候補集合にどの偏りがあったか
+- 見落としていた方式や設計思想は何か
+- 候補集合を広げるべき領域
+- 逆に重複していて整理可能な領域
+
+を明示する。
+
+
+────────────────
+■ 組み合わせとしてArchitectureを見る
+────────────────
+
+最終Architectureは単一形式ではなく、
+
+Model
+× Harness
+× MCP / Tool Interface
+× GitHub organization
+× Semantic representation
+× Storage
+× Index
+× Retrieval
+× Runtime
+× Adapter
+× Validator
+
+等の組み合わせになる可能性がある。
+
+したがって、
+
+「JSON vs SQLite vs RDF」
+
+のような比較ではなく、
+
+複数の設計次元を組み合わせたArchitecture Candidateとして生成する。
+
+
+────────────────
+■ Pareto探索
+────────────────
+
+評価関数は複数ある。
+
+少なくとも、
+
+- AI maintainability
+- Interface Capacity
+- Realization Efficiency
+- semantic fidelity
+- migration ease
+- repairability
+- retrieval quality
+- context efficiency
+- validation strength
+- composability
+- scalability
+- concurrency handling
+- provenance
+- long-term preservation
+- lock-in risk
+- runtime efficiency
+- model portability
+- operational cost
+
+等を考慮する。
+
+単一winnerを早期に決定しない。
+
+複数のPareto-optimal candidateが残ることを許容する。
+
+
+────────────────
+■ 実データ不足への対応
+────────────────
+
+現時点では大規模な実AKR datasetは存在しない。
+
+したがって今回のCoverage Auditで最終winnerを決めない。
+
+アルゴリズム登録自体は停止しない。
+
+今後の実運用では、
+有力候補を必要に応じて並行生成・運用し、
+
+- registration
+- modification
+- retrieval
+- reuse
+- synchronization
+- migration
+- validation
+- repair
+- context consumption
+- model-specific performance
+
+の実データを蓄積する。
+
+この実運用datasetを将来のArchitecture再評価に利用する。
+
+
+────────────────
+■ 今回の出力
+────────────────
+
+次を成果物として作成してください。
+
+1. AKR Design-Dimension Map
+
+AKRを構成する独立設計次元と、
+各次元の主要選択肢。
+
+
+2. Search-Space Coverage Matrix
+
+各設計次元について、
+
+- 現在探索済みか
+- 部分的か
+- 未探索か
+- 代表候補
+- 追加探索すべき分野
+
+を示す。
+
+
+3. Blind-Spot / Early-Closure Audit
+
+現在のAKR議論に、
+
+- どの前提固定
+- 候補漏れ
+- 分類混同
+- 人間中心時代の残存前提
+- AI-native環境で再評価すべき点
+
+があるか。
+
+
+4. Candidate Architecture Families
+
+形式単体ではなく、
+設計次元の組み合わせとして複数familyを生成する。
+
+
+5. Interface Capacity / Realization Efficiency Model
+
+GitHub＋MCP＋AIを主要運用経路とした場合、
+AIが各方式の能力をどの程度引き出せるかを評価する枠組み。
+
+
+6. 今すぐ固定してよいもの
+
+探索空間を狭めず、
+Algorithm登録開始に必要な最小限の規則。
+
+
+7. まだ固定してはいけないもの
+
+実データや追加調査が必要なDecision。
+
+
+8. 次の研究優先順位
+
+どの設計次元を追加調査すると
+Architecture不確実性が最も大きく減るか。
+
+
+────────────────
+■ 保存
+────────────────
+
+今回の成果は既存分析を上書きせず、
+GitHubのAKR repositoryへ新しいanalysis artifactとして保存してください。
+
+推奨ファイル名：
+
+docs/architecture/analysis/
+2026-09-29-architecture-search-space-coverage-audit.md
+
+必要ならdraft PR #1へ追加するか、
+別draft PRを作成してもよいです。
+
+ただし、
+
+- mainのArchitecture採用変更
+- schema migration
+- algorithm assetsのmigration
+- 既存候補の削除
+- 最終形式の決定
+
+は今回行わないでください。
+
+今回の目的は、
+
+「候補から選ぶ」
+
+ことではなく、
+
+「選ぶ前に、設計空間を十分に探索できているかを監査する」
+
+ことです。
+```
